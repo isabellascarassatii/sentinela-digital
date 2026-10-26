@@ -1,0 +1,25 @@
+# Blueprint do Render para o Sentinela Digital (Uptime Kuma).
+# O Render não executa docker-compose.yml; este arquivo faz o equivalente
+# usando a mesma imagem do compose (louislam/uptime-kuma:1).
+services:
+  - type: web
+    name: sentinela-kuma
+    runtime: image
+    image:
+      url: docker.io/louislam/uptime-kuma:1
+    plan: free
+    region: oregon
+    healthCheckPath: /
+    envVars:
+      # Porta que o Kuma já usa no compose (3001); o Render encaminha o tráfego para ela.
+      - key: PORT
+        value: "3001"
+      - key: UPTIME_KUMA_PORT
+        value: "3001"
+    # O plano free NÃO tem disco persistente: o banco (SQLite) é apagado a cada
+    # restart/redeploy. Para manter os dados, troque para `plan: starter` e
+    # descomente o bloco abaixo (equivale ao volume ./kuma-data do compose).
+    # disk:
+    #   name: kuma-data
+    #   mountPath: /app/data
+    #   sizeGB: 1
